@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+    int total = 0;
+    int i;
+
+    for (i = 1; i < argc; i++)
+    {
+        total += atoi(argv[i]);
+    }
+
+    printf("Total: %d\n", total);
+
+    return 0;
+}
