@@ -27,7 +27,9 @@
 #define MAX_DIGITS   10
 #define ID_EDIT      101
 #define ID_BUTTON    102
+#define ID_TIMER     201
 #define BANNER_HEIGHT 60
+#define BLINK_MS     50
 
 /*
     Segment order per digit:
@@ -60,6 +62,7 @@ HWND     g_hButton;
 HWND     g_hLabel;
 HFONT    g_hFont;
 WNDPROC  g_oldEditProc;
+BOOL     g_blinkOn = TRUE; // whether the digits are currently "lit" this blink cycle
 
 void DrawSegment(HDC hdc, int x, int y, int w, int h, int on)
 {
@@ -129,6 +132,13 @@ void SubmitNumber(HWND hwnd)
     }
     g_number[j] = '\0';
 
+    SetWindowText(g_hEdit, ""); // empty the text box
+
+    // Restart the blink cycle so the new number appears lit immediately
+    g_blinkOn = TRUE;
+    KillTimer(hwnd, ID_TIMER);
+    SetTimer(hwnd, ID_TIMER, BLINK_MS, NULL);
+
     InvalidateRect(hwnd, NULL, TRUE); // trigger repaint with the new number
 }
 
@@ -183,6 +193,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             return 0;
         }
 
+        case WM_TIMER:
+        {
+            if (wParam == ID_TIMER)
+            {
+                g_blinkOn = !g_blinkOn;
+                InvalidateRect(hwnd, NULL, TRUE);
+            }
+            return 0;
+        }
+
         case WM_CTLCOLORSTATIC:
         {
             // White banner background behind the label text, black text
@@ -211,12 +231,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             FillRect(hdc, &bannerRect, white);
             DeleteObject(white);
 
-            // Draw each digit below the banner
-            for (int i = 0; g_number[i] != '\0'; i++)
+            // Draw each digit below the banner (skipped every other 50ms tick to blink)
+            if (g_blinkOn)
             {
-                if (g_number[i] >= '0' && g_number[i] <= '9')
+                for (int i = 0; g_number[i] != '\0'; i++)
                 {
-                    DrawDigit(hdc, g_number[i] - '0', 30 + i * 85, BANNER_HEIGHT + 30);
+                    if (g_number[i] >= '0' && g_number[i] <= '9')
+                    {
+                        DrawDigit(hdc, g_number[i] - '0', 30 + i * 85, BANNER_HEIGHT + 30);
+                    }
                 }
             }
 
@@ -225,6 +248,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
 
         case WM_DESTROY:
+            KillTimer(hwnd, ID_TIMER);
             DeleteObject(g_hFont);
             PostQuitMessage(0);
             return 0;
