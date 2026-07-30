@@ -17,9 +17,7 @@ read_word(word, MAX_WORD_LEN+1);
     return 0;
   }
 
-  if(word_len > MAX_WORD_LEN) {
-    word[MAX_WORD_LEN] = '*';
-  }
+  
   if(word_len + 1 > space_remaining()){
     write_line();
     clear_line();
