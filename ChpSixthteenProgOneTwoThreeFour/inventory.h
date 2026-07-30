@@ -4,19 +4,24 @@
 #define NAME_LEN 25
 #define MAX_PARTS 100
 
-struct part {
+struct part
+{
     int number;
     char name[NAME_LEN + 1];
     int on_hand;
+    double price;
 };
 
-extern struct part inventory[MAX_PARTS];
-extern int num_parts;
+int find_part(struct part inventory[], int num_parts, int number);
 
-int find_part(int number);
-void insert(void);
-void search(void);
-void update(void);
-void print(void);
+void insert(struct part inventory[], int *num_parts);
+
+void search(struct part inventory[], int num_parts);
+
+void update(struct part inventory[], int num_parts);
+
+void change_price(struct part inventory[], int num_parts);
+
+void print(struct part inventory[], int num_parts);
 
 #endif
