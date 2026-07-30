@@ -34,23 +34,44 @@ int space_remaining(void)
 
 void write_line(void)
 {
-  int extra_spaces, spaces_to_insertrrt, i, j;
+    int extra_spaces, spaces_to_insert, i, j;
+    static int left_to_right = 0;
 
-  extra_spaces = MAX_LINE_LEN - line_len;
-  for(i = 0; i < line_len; i++){
-    if(line[i] != ' '){
-      putchar(line[i]);
+    extra_spaces = MAX_LINE_LEN - line_len;
+
+    for (i = 0; i < line_len; i++)
+    {
+        if (line[i] != ' ')
+        {
+            putchar(line[i]);
+        }
+        else
+        {
+            if (left_to_right)
+            {
+                /* Put larger gaps toward the beginning */
+                spaces_to_insert =
+                    (extra_spaces + num_words - 2) / (num_words - 1);
+            }
+            else
+            {
+                /* Put larger gaps toward the end */
+                spaces_to_insert =
+                    extra_spaces / (num_words - 1);
+            }
+
+            for (j = 0; j <= spaces_to_insert; j++)
+                putchar(' ');
+
+            extra_spaces -= spaces_to_insert;
+            num_words--;
+        }
     }
-    else{
-      spaces_to_insert = extra_spaces / (num_words - 1);
-      for(j = 1; j <= spaces_to_insert + 1; j++){
-        putchar(' ');
-      }
-      extra_spaces -= spaces_to_insert;
-      num_words--;
-    }
-  }
-  putchar('\n');
+
+    putchar('\n');
+
+    /* Alternate direction for the next line */
+    left_to_right = !left_to_right;
 }
 
 void flush_line(void)
