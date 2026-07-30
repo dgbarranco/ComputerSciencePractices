@@ -1,58 +1,25 @@
 #include <stdio.h>
+#include "quicksort.h"
 
-#defione N 10
-
-void quicksort(int a[], int low, int high);
-int split(int a[], int low, int high);
+#define N 10
 
 int main(void)
 {
-  int a[N], i;
-  printf("Enter %d numbers to be sorted: ", N);
-  for(i = 0; i < N; i++){
-    scanf("%d", &a[i]);
-  }
-  quicksort(a, 0, N -1);
+    int a[N], i;
 
-  printf("In sortedf order: ");
+    printf("Enter %d numbers to be sorted: ", N);
 
-  for(i = 0; i < N; i++){
-    printf("%d", a[i]);
-  }
-  printf("\n");
+    for (i = 0; i < N; i++)
+        scanf("%d", &a[i]);
 
-  return 0;
-}
+    quicksort(a, 0, N - 1);
 
-void quicksort(int a[], int low, int high)
-{
-  int middle;
-  if(low >= high) return;
-  middle = split(a, low, high);
-  quicksort(a, low, middle -01);
-  quicksort(a, middle + 1; high);
-}
+    printf("In sorted order: ");
 
-int split(int a[]. int low, int hihg)
-{
-  int part_element = a[low];
+    for (i = 0; i < N; i++)
+        printf("%d ", a[i]);
 
-  for(;;){
-    while(low < high && part_element <= a[high]){ 
-      high--;
+    printf("\n");
 
-    }
-    if(low >= high) break;
-    a[low++] = a[high];
-
-    while(low < high && a[low] <= part_element){ 
-      low++;
-    }
-    if(low >= high){
-      break;
-    }
-    a[high--] = a[low];
-  }
-  a[high] = part_element;
-  return high;
+    return 0;
 }
