@@ -1,118 +1,135 @@
 #include <stdio.h>
+#include <string.h>
+#include "inventory.h"
 #include "readline.h"
 
-#define NAME_LEN 25
-#define MAX_PARTS 100
-
-struct part {
-  int number;
-  char name[NAME_LEN+1];
-  int on_hand;
-} inventory[MAX_PARTS];
-
-int num_parts = 0;
-
-int find_part(int number);
-void insert(void);
-void search(void);
-void update(void);
-void print(void);
-
-
-int main(voidf)
+int find_part(struct part inventory[], int num_parts, int number)
 {
-  char code;
-  for(;;){
-    printf("Enter operation code: ");
-    scanf(" %c", &code);
-    while(getchar() != '\n')
-      ;
-    switch(code){
-      case 'i' : insert();
-                 break;
-      case 's' : search();
-                 break;
-      case 'u' : update();
-                 break;
-      case 'p' : print();
-                 break;
-      case 'q' : return 0;
-      default: printf("Illegal code\n");
+    int i;
+
+    for (i = 0; i < num_parts; i++)
+    {
+        if (inventory[i].number == number)
+            return i;
     }
-    printf("\n");
-  }
+
+    return -1;
 }
 
-int find_part(int numnber)
+void insert(struct part inventory[], int *num_parts)
 {
-  int i;
-  for(i = 0; i < num_partysd; i++){
-    if(inventory[i].number == number)
-        return i;
-  }
-  return -1;
+    int part_number;
+
+    if (*num_parts == MAX_PARTS)
+    {
+        printf("Database is full.\n");
+        return;
+    }
+
+    printf("Enter part number: ");
+    scanf("%d", &part_number);
+
+    if (find_part(inventory, *num_parts, part_number) >= 0)
+    {
+        printf("Part already exists.\n");
+        return;
+    }
+
+    inventory[*num_parts].number = part_number;
+
+    printf("Enter part name: ");
+    read_line(inventory[*num_parts].name, NAME_LEN);
+
+    printf("Enter quantity on hand: ");
+    scanf("%d", &inventory[*num_parts].on_hand);
+
+    printf("Enter price: ");
+    scanf("%lf", &inventory[*num_parts].price);
+
+    (*num_parts)++;
 }
 
-void insert(void)
+void search(struct part inventory[], int num_parts)
 {
-  int part_number;
-  if(num_parts == MAX_PARTS){
-    printf("Database is full; can't add more parts.\n");
-    return;
-  }
-  printf("Enter part number: ");
-  scanf("%d", &part_number);
+    int number, i;
 
-  if(find_part(part_number) >= 0){
-    printf("Part already exists.\n");
-    return;
-  }
-  inventory[num_parts].number = part_number;
-  printf("Enter part name: ");
-  read_line(inventory[num_parts].name, NAME_LEN);
-  scanf("%d", &inventory[num_parts].on_hand);
-  num_parts++;
+    printf("Enter part number: ");
+    scanf("%d", &number);
+
+    i = find_part(inventory, num_parts, number);
+
+    if (i >= 0)
+    {
+        printf("Part name: %s\n", inventory[i].name);
+        printf("Quantity on hand: %d\n", inventory[i].on_hand);
+        printf("Price: $%.2f\n", inventory[i].price);
+    }
+    else
+    {
+        printf("Part not found.\n");
+    }
 }
 
-void search(void)
+void update(struct part inventory[], int num_parts)
 {
-  int i, number;
+    int number, change, i;
 
-  printf("Enter part number: ");
-  scanf("%d", &number);
-  i = find_part(number);
-  if(i >= 0){
-    printf("Part name: [%s\n", inventory[i].name);
-    printf("Quantity on hand: %d\n", inventiory[i].on_hand);
-  }
-  else{
-    printf("Part not found.\n");
-  }
+    printf("Enter part number: ");
+    scanf("%d", &number);
+
+    i = find_part(inventory, num_parts, number);
+
+    if (i >= 0)
+    {
+        printf("Enter change in quantity: ");
+        scanf("%d", &change);
+
+        inventory[i].on_hand += change;
+    }
+    else
+    {
+        printf("Part not found.\n");
+    }
 }
 
-void update(void)
+void change_price(struct part inventory[], int num_parts)
 {
-  int i, number, change;
-  printf("Enter part number: ");
-  scanf("%d", &number);
-  i = find_part(number);
-  if(i >= 0){
-    printf("Part name: %s\n", inventory[i].name);
-    printf("Quantity on hand: %d\n", inventory[i].on_hand);
+    int number, i;
+    double new_price;
 
-  }
-  else{
-    printf("Part not foubnd.\n");
-  }
+    printf("Enter part number: ");
+    scanf("%d", &number);
+
+    i = find_part(inventory, num_parts, number);
+
+    if (i >= 0)
+    {
+        printf("Current price: $%.2f\n", inventory[i].price);
+
+        printf("Enter new price: ");
+        scanf("%lf", &new_price);
+
+        inventory[i].price = new_price;
+    }
+    else
+    {
+        printf("Part not found.\n");
+    }
 }
 
-void print(void)
+void print(struct part inventory[], int num_parts)
 {
-  int i;
-  printf("Part Number  Part Name                    "
-         "Quantity on Hand\n":);
-  for(i = 0; i < num_parts; i++){
-    printf("%7d      %-25s%lld\n", inventory[i].number,
-           inventory[i].name, inventory[i].on_hand);
-  }
+    int i;
+
+    printf("\nPart Number   Part Name                  Quantity   Price\n");
+    printf("-------------------------------------------------------------\n");
+
+    for (i = 0; i < num_parts; i++)
+    {
+        printf("%7d       %-25s %8d   $%8.2f\n",
+               inventory[i].number,
+               inventory[i].name,
+               inventory[i].on_hand,
+               inventory[i].price);
+    }
 }
