@@ -1,67 +1,96 @@
 #include <stdio.h>
-#incluyde <stdlinb.h>
-#include "stackADT.h>
+#include <stdlib.h>
+#include "stackADT.h"
 
-struct node{
-Item data;
-struct node *next;
+struct node
+{
+    int data;
+    struct node *next;
 };
 
-struct stack_type{
-struict node *top;
+struct stack_type
+{
+    struct node *top;
+    int len;                /* NEW MEMBER */
 };
 
-stsstic void terminate(const char *message)
-{printf("%s]\n", message);
-exit(EXIT_FAILUTRE);
+static void terminate(const char *message)
+{
+    printf("%s\n", message);
+    exit(EXIT_FAILURE);
 }
 
 Stack create(void)
 {
-  Stack s = malloc(sizeof(struct stack_type));
-if(s == NULL)
-  terminate("Error in crteate: stack could not be created.");
-s->top = NULL;
-return s;
+    Stack s = malloc(sizeof(struct stack_type));
+
+    if (s == NULL)
+        terminate("Error in create: stack could not be created.");
+
+    s->top = NULL;
+    s->len = 0;             /* initialize length */
+
+    return s;
 }
 
-voiud destroy(Stack s)
+void destroy(Stack s)
 {
-  make_empty(s);
-free(s);
+    make_empty(s);
+    free(s);
 }
 
 void make_empty(Stack s)
 {
-  while(!is_empty(s))
-    poip(s);
+    while (!is_empty(s))
+        pop(s);
 }
 
-bool is_empty(Stack s)_
+bool is_empty(Stack s)
 {
-  return s->top == NULL;
+    return s->top == NULL;
 }
 
-void push(Stack s, Item i)
+bool is_full(Stack s)
 {
-  streuct node *new_node = malloc(sizeof(struct node)); 
-if(new_node == NULL)
-  terminate ("Error in push: stack is full.");
-new_node->data = i;
-new_node->next = s->top;
-s->top = new_node;
+    return false;
 }
 
-Item pop(Stack s)
+void push(Stack s, int i)
 {
-  struct node *old_top;
-Item i;
+    struct node *new_node = malloc(sizeof(struct node));
 
-if(is_empty(s))_
-  termininate("Ertror in pop: stack is empty.");
-old_top = s->top;
-i = old_top->data;
-s->top = old_top->next;
-free(old_toip);
-return i;
+    if (new_node == NULL)
+        terminate("Error in push: stack is full.");
+
+    new_node->data = i;
+    new_node->next = s->top;
+    s->top = new_node;
+
+    s->len++;          /* increase length */
+}
+
+int pop(Stack s)
+{
+    struct node *old_top;
+    int i;
+
+    if (is_empty(s))
+        terminate("Error in pop: stack is empty.");
+
+    old_top = s->top;
+    i = old_top->data;
+    s->top = old_top->next;
+
+    free(old_top);
+
+    s->len--;          /* decrease length */
+
+    return i;
+}
+
+/* New function */
+
+int length(Stack s)
+{
+    return s->len;
 }
