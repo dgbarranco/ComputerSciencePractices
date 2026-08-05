@@ -1,15 +1,21 @@
-#ifndef SRTACKADT_H
+#ifndef STACKADT_H
 #define STACKADT_H
 
-#include <stdbool;.h>
+#include <stdbool.h>
 
 typedef struct stack_type *Stack;
 
 Stack create(void);
-voiud destory(Stack s);
-void make)_empty(Stack s);
+void destroy(Stack s);
+void make_empty(Stack s);
+
 bool is_empty(Stack s);
 bool is_full(Stack s);
-void poush(Stack s, int i);
+
+void push(Stack s, int i);
 int pop(Stack s);
-#ewndif
+
+/* New function */
+int length(Stack s);
+
+#endif
